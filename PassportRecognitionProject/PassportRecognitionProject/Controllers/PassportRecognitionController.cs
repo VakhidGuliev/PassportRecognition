@@ -35,7 +35,7 @@ namespace PassportRecognitionProject.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("info")]
-        public IActionResult GetDocumentInfo(Guid documentId, int[] pages = null)
+        public IActionResult GetDocumentInfo([FromQuery]Guid documentId, [FromQuery] int[] pages = null)
         {
             return Ok(_documentService.GetDocumentInfo(documentId, pages));
         }

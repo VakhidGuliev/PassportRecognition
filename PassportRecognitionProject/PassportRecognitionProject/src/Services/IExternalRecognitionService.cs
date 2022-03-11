@@ -15,11 +15,5 @@ namespace PassportRecognitionProject.src.Services
         /// <param name="image"> Изображение </param>
         /// <returns> Полученные от внешнего сервиса данные </returns>
         public ExternalObjectModel GetRecognition(ImageObject image);
-
-        /// <summary>
-        /// Получение данных для подключения к  внешнему сервису
-        /// </summary>
-        /// <returns> Данные для подключения к внешнему сервису </returns>
-        protected ExternalServiceInfo GetExternalServiceInfo();
     }
 }

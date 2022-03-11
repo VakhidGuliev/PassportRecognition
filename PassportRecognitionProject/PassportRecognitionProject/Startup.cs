@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using PassportRecognitionProject.src.Database;
+using PassportRecognitionProject.src.Services;
 
 namespace PassportRecognitionProject
 {
@@ -25,6 +27,10 @@ namespace PassportRecognitionProject
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PassportRecognitionProject", Version = "v1" });
             });
+
+            services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IExternalRecognitionService, ExternalRecognitionService>();
+            services.AddScoped<IDatabaseService, DatabaseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
