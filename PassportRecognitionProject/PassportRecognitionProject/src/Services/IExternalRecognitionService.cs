@@ -7,7 +7,7 @@ namespace PassportRecognitionProject.src.Services
     /// <summary>
     /// Интерфейс взаимодействия с внешним сервисом
     /// </summary>
-    interface IExternalRecognitionService
+    public interface IExternalRecognitionService
     {
         /// <summary>
         /// Получение информации о документе с внешнего сервиса

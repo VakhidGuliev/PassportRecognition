@@ -25,31 +25,17 @@ namespace PassportRecognitionProject.src.Services
         public DocumentInfoModel RecognitionDocument(ImageObject image);
 
         /// <summary>
-        /// Отправить полученный ответ от внешнего сервиса в базу данных
-        /// </summary>
-        /// <param name="externalModel"> Инофрмация полученная от внешнего сервиса </param>
-        /// <returns> Расшифрованную и универсальную модель документа </returns>
-        public DocumentInfoModel AddToDataBase(ExternalObjectModel externalModel);
-
-        /// <summary>
         /// Получение информации об сохранённом документе
         /// </summary>
         /// <param name="documentId"> уникальный идентификатор документа </param>
         /// <param name="page"> номера запрашиваемых страниц </param>
         /// <returns> Информация по запрашиваемому документу </returns>
-        public DocumentInfoModel GetDocumentInfo(Guid documentId, int[] page);
+        public DocumentInfoModel GetDocumentInfo(Guid documentId, int[] pages);
 
         /// <summary>
         /// Получить список отсканированных документов
         /// </summary>
         /// <returns> Список краткой инормации об готовых документах для последующего выбора </returns>
         public List<DocumentShortInfo> GetScannedDocument();
-
-        /// <summary>
-        /// Получить от внешнего сервиса распознанную информация с изображения документа
-        /// </summary>
-        /// <param name="image"> исходное изображение </param>
-        /// <returns> Информация пришедшая с внешнего сервиса </returns>
-        public ExternalObjectModel GetRecognitionDocFromExternalService(ImageObject image);
     }
 }
