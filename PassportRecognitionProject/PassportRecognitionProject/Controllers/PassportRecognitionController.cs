@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PassportRecognitionProject.src.Services;
+using System;
+using ImageObject = System.Object;
 
 namespace PassportRecognitionProject.Controllers
 {
@@ -7,12 +10,44 @@ namespace PassportRecognitionProject.Controllers
     [Route("[controller]")]
     public class PassportRecognitionController : ControllerBase
     {
+        private readonly IDocumentService _documentService;
 
-        private readonly ILogger<PassportRecognitionController> _logger;
-
-        public PassportRecognitionController(ILogger<PassportRecognitionController> logger)
+        public PassportRecognitionController(IDocumentService docService)
         {
-            _logger = logger;
+            _documentService = docService;
+        }
+
+        /// <summary>
+        /// Получить расшифровку документа
+        /// </summary>
+        /// <param name="docScan"> Исходное изображение документа </param>
+        [HttpPost]
+        public IActionResult RecognitionNewDocument([FromBody] ImageObject docScan)
+        {
+            return Ok(_documentService.RecognitionDocument(docScan));
+        }
+
+        /// <summary>
+        /// Получить информацию по конкретному документу
+        /// </summary>
+        /// <param name="documentId"> Уникальный идентификатор документа </param>
+        /// <param name="pages"> Номера необходимых страниц(по умолчанию все)</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("info")]
+        public IActionResult GetDocumentInfo(Guid documentId, int[] pages = null)
+        {
+            return Ok(_documentService.GetDocumentInfo(documentId, pages));
+        }
+
+        /// <summary>
+        /// Получить список всех расшифрованных документов
+        /// </summary>
+        [HttpGet]
+        [Route("scanned")]
+        public IActionResult GetScannedDocuments()
+        {
+            return Ok(_documentService.GetScannedDocument());
         }
     }
 }
