@@ -22,7 +22,6 @@ namespace PassportRecognitionProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -32,6 +31,8 @@ namespace PassportRecognitionProject
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IExternalRecognitionService, ExternalRecognitionService>();
             services.AddScoped<IDatabaseService, DatabaseService>();
+
+            services.AddOptions<string>(Configuration.GetSection("ExteranlServiceURL").Value);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
