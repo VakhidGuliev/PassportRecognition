@@ -1,8 +1,8 @@
-﻿using PassportRecognitionProject.src.Models;
+﻿using Shared.Models;
 using System;
 using System.Collections.Generic;
 
-namespace PassportRecognitionProject.src.Database
+namespace DataService.src.Database
 {
     public class DatabaseService : IDatabaseService
     {

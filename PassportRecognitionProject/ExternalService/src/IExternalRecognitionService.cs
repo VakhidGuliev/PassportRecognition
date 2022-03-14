@@ -1,8 +1,7 @@
-﻿using PassportRecognitionProject.src.Models;
-
+﻿using Shared.Models;
 using ImageObject = System.Object;
 
-namespace PassportRecognitionProject.src.Services
+namespace ExternalService.src
 {
     /// <summary>
     /// Интерфейс взаимодействия с внешним сервисом

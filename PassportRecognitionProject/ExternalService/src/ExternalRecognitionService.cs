@@ -1,7 +1,7 @@
-﻿using PassportRecognitionProject.src.Models;
+﻿using Shared.Models;
 using System;
 
-namespace PassportRecognitionProject.src.Services
+namespace ExternalService.src
 {
     public class ExternalRecognitionService : IExternalRecognitionService
     {

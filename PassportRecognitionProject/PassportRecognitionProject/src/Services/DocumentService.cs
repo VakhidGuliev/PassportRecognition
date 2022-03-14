@@ -1,12 +1,12 @@
-﻿using PassportRecognitionProject.src.Database;
-using PassportRecognitionProject.src.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 using ImageObject = System.Object;
 using DocumentInfoModel = System.Object;
 using DocumentShortInfo = System.Object;
-
+using ExternalService.src;
+using DataService.src.Database;
+using Shared.Models;
 
 namespace PassportRecognitionProject.src.Services
 {
