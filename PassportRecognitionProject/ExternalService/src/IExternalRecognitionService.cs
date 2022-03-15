@@ -1,4 +1,5 @@
 ﻿using Shared.Models;
+using System.Threading.Tasks;
 using ImageObject = System.Object;
 
 namespace ExternalService.src
@@ -13,6 +14,6 @@ namespace ExternalService.src
         /// </summary>
         /// <param name="image"> Изображение </param>
         /// <returns> Полученные от внешнего сервиса данные </returns>
-        public ExternalObjectModel GetRecognition(ImageObject image);
+        public Task<ExternalObjectModel> GetRecognition(ImageObject image);
     }
 }

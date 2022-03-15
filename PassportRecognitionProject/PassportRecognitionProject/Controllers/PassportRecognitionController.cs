@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using PassportRecognitionProject.src.Services;
 using System;
+using System.Threading.Tasks;
 using ImageObject = System.Object;
 
 namespace PassportRecognitionProject.Controllers
@@ -22,9 +22,9 @@ namespace PassportRecognitionProject.Controllers
         /// </summary>
         /// <param name="docScan"> Исходное изображение документа </param>
         [HttpPost]
-        public IActionResult RecognitionNewDocument([FromBody] ImageObject docScan)
+        public async Task<IActionResult> RecognitionNewDocument([FromBody] ImageObject docScan)
         {
-            return Ok(_documentService.RecognitionDocument(docScan));
+            return Ok(await _documentService.RecognitionDocument(docScan));
         }
 
         /// <summary>

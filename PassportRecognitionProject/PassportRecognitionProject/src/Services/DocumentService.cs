@@ -7,6 +7,7 @@ using DocumentShortInfo = System.Object;
 using ExternalService.src;
 using DataService.src.Database;
 using Shared.Models;
+using System.Threading.Tasks;
 
 namespace PassportRecognitionProject.src.Services
 {
@@ -21,9 +22,9 @@ namespace PassportRecognitionProject.src.Services
             _databaseService = databaseService;
         }
 
-        public DocumentInfoModel RecognitionDocument(ImageObject image)
+        public async Task<DocumentInfoModel> RecognitionDocument(ImageObject image)
         {
-            var externalInfo = GetRecognitionDocFromExternalService(image);
+            var externalInfo = await GetRecognitionDocFromExternalService(image);
             return AddToDataBase(externalInfo);
         }
 
@@ -42,9 +43,9 @@ namespace PassportRecognitionProject.src.Services
         /// </summary>
         /// <param name="image"> исходное изображение </param>
         /// <returns> Информация пришедшая с внешнего сервиса </returns>
-        private ExternalObjectModel GetRecognitionDocFromExternalService(ImageObject image)
+        private async Task<ExternalObjectModel> GetRecognitionDocFromExternalService(ImageObject image)
         {
-            return _externalService.GetRecognition(image);
+            return await _externalService.GetRecognition(image);
         }
 
         /// <summary>

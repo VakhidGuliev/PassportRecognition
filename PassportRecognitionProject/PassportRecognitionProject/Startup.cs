@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PassportRecognitionProject.src.Services;
+using Shared.Models;
 
 namespace PassportRecognitionProject
 {
@@ -32,7 +33,7 @@ namespace PassportRecognitionProject
             services.AddScoped<IExternalRecognitionService, ExternalRecognitionService>();
             services.AddScoped<IDatabaseService, DatabaseService>();
 
-            services.AddOptions<string>(Configuration.GetSection("ExteranlServiceURL").Value);
+            services.Configure<ExternalServiceInfo>(Configuration.GetSection("ExternalServiceInfo"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
