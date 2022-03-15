@@ -1,6 +1,6 @@
 ﻿using ExternalService.Model.Accessory;
 using Newtonsoft.Json;
-using System;
+using Shared.Enums;
 using System.Collections.Generic;
 
 namespace ExternalService.Model.Requests
@@ -32,9 +32,9 @@ namespace ExternalService.Model.Requests
             };
         }
 
-        public new Type GetType()
+        public ExternalTypeEnum GetType()
         {
-            return typeof(RegulaServiceRequest);
+            return ExternalTypeEnum.Regula;
         }
     }
 }

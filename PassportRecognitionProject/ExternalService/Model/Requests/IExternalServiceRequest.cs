@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Enums;
+using System;
 
 namespace ExternalService.Model.Requests
 {
@@ -16,6 +17,6 @@ namespace ExternalService.Model.Requests
         /// <summary>
         /// Метод возвращаемый тип запроса(в дальнейшем может помочь при нескольких внешних сервисах)
         /// </summary>
-        public Type GetType();
+        public ExternalTypeEnum GetType();
     }
 }

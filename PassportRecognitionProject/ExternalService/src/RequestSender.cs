@@ -1,9 +1,11 @@
 ﻿using ExternalService.Model.Requests;
 using ExternalService.Model.Responses;
-using System;
 using System.Net.Http;
-using System.Text.Json;
+using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System;
+using Shared.Enums;
 
 namespace ExternalService.src
 {
@@ -11,25 +13,23 @@ namespace ExternalService.src
     {
         public static async Task<IExternalServiceResponse> Send(string URL, IExternalServiceRequest externalServiceRequest)
         {
-            string jsonResponse;
+
+            string responseRes;
+
+            var json = JsonConvert.SerializeObject(externalServiceRequest);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
             using (var client = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(HttpMethod.Post, URL))
-                {
-                    var response = await client.SendAsync(request);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        throw new HttpRequestException(statusCode: response.StatusCode, message: response.ReasonPhrase, inner: null);
-                    }
-                    //todo Проверить json ли
-                    jsonResponse = response.Content.ToString();
-                }
-            }
+                var response = await client.PostAsync(URL, data);
+
+                responseRes = response.Content.ReadAsStringAsync().Result;                
+            };
 
             // Не уверен, что это сработает
-            switch ((IExternalServiceRequest)externalServiceRequest.GetType())
+            switch (externalServiceRequest.GetType())
             {
-                case RegulaServiceRequest: return JsonSerializer.Deserialize<RegulaResponse>(jsonResponse);
+                case ExternalTypeEnum.Regula: return JsonConvert.DeserializeObject<RegulaResponse>(responseRes);
                 default: throw new Exception("Непредвиденный тип запроса сервиса");
             }
         }
