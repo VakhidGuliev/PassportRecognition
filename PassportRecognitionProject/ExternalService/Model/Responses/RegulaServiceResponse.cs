@@ -1,6 +1,7 @@
 ﻿using Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ExternalService.Model.Responses
 {
@@ -223,6 +224,9 @@ namespace ExternalService.Model.Responses
         public string dYear { get; set; }
     }
 
+    /// <summary>
+    /// Соответсвует разделу Document type
+    /// </summary>
     public class OneCandidate
     {
         public int AuthenticityNecessaryLights { get; set; }
@@ -264,6 +268,9 @@ namespace ExternalService.Model.Responses
         public MRZTestQuality MRZTestQuality { get; set; }
         public FaceDetection FaceDetection { get; set; }
         public DocumentPosition DocumentPosition { get; set; }
+        /// <summary>
+        /// Соответсвует части раздела Document type
+        /// </summary>
         public OneCandidate OneCandidate { get; set; }
         public DocGraphicsInfo DocGraphicsInfo { get; set; }
         public ImageQualityCheckList ImageQualityCheckList { get; set; }
@@ -365,6 +372,10 @@ namespace ExternalService.Model.Responses
         public int originalPageIndex { get; set; }
     }
 
+
+    /// <summary>
+    /// Вероятно, является разделом Document Images
+    /// </summary>
     public class FieldList
     {
         public List<ComparisonList> comparisonList { get; set; }
@@ -380,6 +391,9 @@ namespace ExternalService.Model.Responses
         public List<ValueList> valueList { get; set; }
     }
 
+    /// <summary>
+    /// Соответствует разделу Text Fields
+    /// </summary>
     public class Text
     {
         public List<AvailableSourceList> availableSourceList { get; set; }
@@ -390,6 +404,9 @@ namespace ExternalService.Model.Responses
         public int validityStatus { get; set; }
     }
 
+    /// <summary>
+    /// Соответствует разделу Graphic Fields
+    /// </summary>
     public class Images
     {
         public List<AvailableSourceList> availableSourceList { get; set; }
@@ -420,6 +437,9 @@ namespace ExternalService.Model.Responses
         public int overallStatus { get; set; }
     }
 
+    /// <summary>
+    /// Соответвует разделу Status
+    /// </summary>
     public class Status
     {
         public DetailsOptical detailsOptical { get; set; }
@@ -449,6 +469,8 @@ namespace ExternalService.Model.Responses
 
     public class RegulaResponse : IExternalServiceResponse
     {
+        private const string CantRecive = "can't resive data";
+
         public int ChipPage { get; set; }
         public ContainerList ContainerList { get; set; }
         public int CoreLibResultCode { get; set; }
@@ -461,7 +483,22 @@ namespace ExternalService.Model.Responses
 
         public ExternalObjectModel ConverToCommonType()
         {
-            return new ExternalObjectModel();
+            string mRZLine = "", documentClassCode;
+
+            var docVisualPart = ContainerList.List.First(it => it.DocVisualExtendedInfo != null);
+            if (docVisualPart != null)
+            {
+                var fields = docVisualPart.DocVisualExtendedInfo.pArrayFields;
+                mRZLine = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                    .First(it => it.FieldType == 51 && it.FieldName == "MRZ Strings").Buf_Text;
+                documentClassCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                    .FirstOrDefault(it => it.FieldType == 51 && it.FieldName == "Document Class Code").Buf_Text;
+            }
+
+            return new ExternalObjectModel("testNumber")
+            {
+                MRZLine = mRZLine
+            };
         }
     }
 
