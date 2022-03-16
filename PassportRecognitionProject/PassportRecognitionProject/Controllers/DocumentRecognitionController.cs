@@ -8,11 +8,11 @@ namespace PassportRecognitionProject.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PassportRecognitionController : ControllerBase
+    public class DocumentRecognitionController : ControllerBase
     {
         private readonly IDocumentService _documentService;
 
-        public PassportRecognitionController(IDocumentService docService)
+        public DocumentRecognitionController(IDocumentService docService)
         {
             _documentService = docService;
         }

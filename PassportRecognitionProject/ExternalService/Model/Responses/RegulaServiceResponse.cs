@@ -1,6 +1,8 @@
-﻿using Shared.Models;
+﻿using Shared.Enums;
+using Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace ExternalService.Model.Responses
@@ -483,22 +485,178 @@ namespace ExternalService.Model.Responses
 
         public ExternalObjectModel ConverToCommonType()
         {
-            string mRZLine = "", documentClassCode;
+            ExternalObjectModel result;
 
-            var docVisualPart = ContainerList.List.First(it => it.DocVisualExtendedInfo != null);
-            if (docVisualPart != null)
+            var mainDocVisualPart = ContainerList.List.First(it => it.DocVisualExtendedInfo != null && it.result_type == 3);
+            var secondaryDocVisualPart = ContainerList.List.First(it => it.DocVisualExtendedInfo != null && it.result_type == 17);
+
+            var DocNumberField = mainDocVisualPart.DocVisualExtendedInfo.pArrayFields
+                .First(it => it.FieldType == 2 && it.FieldName == "Document Number");
+            if (DocNumberField == null)
             {
-                var fields = docVisualPart.DocVisualExtendedInfo.pArrayFields;
-                mRZLine = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                    .First(it => it.FieldType == 51 && it.FieldName == "MRZ Strings").Buf_Text;
-                documentClassCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                    .FirstOrDefault(it => it.FieldType == 51 && it.FieldName == "Document Class Code").Buf_Text;
+                DocNumberField = secondaryDocVisualPart.DocVisualExtendedInfo.pArrayFields
+                    .First(it => it.FieldType == 2 && it.FieldName == "Document Number");
             }
 
-            return new ExternalObjectModel("testNumber")
+            if (DocNumberField != null)
             {
-                MRZLine = mRZLine
-            };
+                string DocumentNumber = DocNumberField.Buf_Text;
+                result = new ExternalObjectModel(DocumentNumber);
+
+                if (mainDocVisualPart != null)
+                {
+                    var fields = mainDocVisualPart.DocVisualExtendedInfo.pArrayFields;
+                    FillByFirstDocVisualExtendedInfo(fields, ref result);
+                }
+
+                if (secondaryDocVisualPart != null)
+                {
+                    var fields = secondaryDocVisualPart.DocVisualExtendedInfo.pArrayFields;
+                    FillBySecondDocVisualExtendedInfo(fields, ref result);
+                }
+
+                FillDocumentType(ref result);
+                FillAge(ref result);
+            }
+            else
+            {
+                throw new ArgumentNullException("Не удалось распознать номер документа");
+            }
+
+            return result;           
+        }
+
+        private void FillByFirstDocVisualExtendedInfo(List<PArrayField> fields, ref ExternalObjectModel externalObjectModel)
+        {
+            string MRZLine = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 51 && it.FieldName == "MRZ Strings").Buf_Text;
+
+            string DocumentClassCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 0 && it.FieldName == "Document Class Code").Buf_Text;
+
+            string IssStateCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 1 && it.FieldName == "Issuing State Code").Buf_Text;
+
+            string FSName = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 25 && it.FieldName == "Surname & Given Names").Buf_Text;
+
+            // todo I have trouble
+            //var NationalCode = fields.First(it => it.FieldType == 26 && it.FieldName == "Nationality Codes").Buf_Text;
+
+            string Sex = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 12 && it.FieldName == "Sex").Buf_Text;
+
+            string OptionalData = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 36 && it.FieldName == "Optional Data").Buf_Text;
+
+            // todo Проверить как это работает
+            /*
+            var birthdayDate = fields.First(it => it.FieldType == 5 && it.FieldName == "Date of Birth");
+            var expiryDate = fields.First(it => it.FieldType == 3 && it.FieldName == "Date of Expiry");
+            */
+
+            externalObjectModel.FirstSecondName = FSName;
+            externalObjectModel.IssuingStateCode = IssStateCode;
+            externalObjectModel.Sex = Sex;
+            externalObjectModel.MRZLine = MRZLine;
+            externalObjectModel.DocumentClassCode = DocumentClassCode;
+            // externalObjectModel.NationalityCode = NationalCode;
+            externalObjectModel.OptionalData = OptionalData;
+            /*
+            if (birthdayDate != null)
+            {
+                // Не факт, что работает, маска немного кривая
+                externalObjectModel.DateOfBirth = DateTime.ParseExact(birthdayDate.Buf_Text, birthdayDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
+            }
+
+            if (expiryDate != null)
+            {
+                // Не факт, что работает, маска немного кривая
+                externalObjectModel.DateOfExpiration = DateTime.ParseExact(expiryDate.Buf_Text, expiryDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
+            }
+            */
+        }
+
+        private void FillBySecondDocVisualExtendedInfo(List<PArrayField> fields, ref ExternalObjectModel externalObjectModel)
+        {
+            string plaseOfBirth = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 6 && it.FieldName == "Place of Birth").Buf_Text;
+
+            string Contry = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 24 && it.FieldName == "Authority").Buf_Text;
+
+            string Nationality = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                .First(it => it.FieldType == 11 && it.FieldName == "Nationality").Buf_Text;
+
+            if (externalObjectModel.Sex == CantRecive || string.IsNullOrEmpty(externalObjectModel.Sex))
+            {
+                externalObjectModel.Sex = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                    .First(it => it.FieldType == 12 && it.FieldName == "Sex").Buf_Text;
+            }
+
+            if (externalObjectModel.IssuingStateCode == CantRecive || string.IsNullOrEmpty(externalObjectModel.IssuingStateCode))
+            {
+                externalObjectModel.IssuingStateCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
+                    .First(it => it.FieldType == 1 && it.FieldName == "Issuing State Code").Buf_Text;
+            }
+
+            // todo Проверить как это работает
+            /*
+            var birthdayDate = fields.First(it => it.FieldType == 5 && it.FieldName == "Date of Birth");
+            var expiryDate = fields.First(it => it.FieldType == 3 && it.FieldName == "Date of Expiry");
+
+            var issueDate = fields.First(it => it.FieldType == 4 && it.FieldName == "Date of Issue");
+            */
+
+            externalObjectModel.PlaceOfBirth = plaseOfBirth;
+            externalObjectModel.ContryName = Contry;
+            externalObjectModel.Nationality = Nationality;
+            /*
+            if (birthdayDate != null)
+            {
+                // Не факт, что работает, маска немного кривая
+                externalObjectModel.DateOfBirth = DateTime.ParseExact(birthdayDate.Buf_Text, birthdayDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
+            }
+
+            if (expiryDate != null)
+            {
+                // Не факт, что работает, маска немного кривая
+                externalObjectModel.DateOfExpiration = DateTime.ParseExact(expiryDate.Buf_Text, expiryDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
+            }
+
+            if (issueDate != null)
+            {
+                // Не факт, что работает, маска немного кривая
+                externalObjectModel.DateOfExpiration = DateTime.ParseExact(issueDate.Buf_Text, issueDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
+            }
+            */
+        }
+
+        private void FillDocumentType(ref ExternalObjectModel externalObjectModel)
+        {
+            var onCandidateInfo = ContainerList.List.DefaultIfEmpty(new ListMain() { OneCandidate = null }).First(it => it.OneCandidate != null).OneCandidate;
+            if (onCandidateInfo != null)
+            {
+                externalObjectModel.DocumentType = onCandidateInfo.DocumentName;
+                externalObjectModel.DocumentCategory = (DocumentCategoryEnum)onCandidateInfo.RFID_Presence;
+            }
+            else
+            {
+                externalObjectModel.DocumentType = CantRecive;
+            }
+        }
+
+        private void FillAge(ref ExternalObjectModel externalObjectModel)
+        {
+            var textfields = ContainerList.List.DefaultIfEmpty(new ListMain() { Text = null }).First(it => it.Text != null).Text;
+            if (textfields != null)
+            {
+                externalObjectModel.Age = textfields.fieldList.DefaultIfEmpty(new FieldList() { value = CantRecive }).First(it => it.fieldType == 185 && it.fieldName == "Age").value;                
+            }
+            else
+            {
+                externalObjectModel.DocumentType = CantRecive;
+            }
         }
     }
 
