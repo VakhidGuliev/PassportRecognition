@@ -638,7 +638,9 @@ namespace ExternalService.Model.Responses
             if (onCandidateInfo != null)
             {
                 externalObjectModel.DocumentType = onCandidateInfo.DocumentName;
-                externalObjectModel.DocumentCategory = (DocumentCategoryEnum)onCandidateInfo.RFID_Presence;
+                externalObjectModel.DocumentCategory = (onCandidateInfo.RFID_Presence < 3)
+                    ? (DocumentCategoryEnum)onCandidateInfo.RFID_Presence
+                    : DocumentCategoryEnum.Unknown;
             }
             else
             {

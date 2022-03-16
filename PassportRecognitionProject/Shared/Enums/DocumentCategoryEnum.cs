@@ -8,8 +8,21 @@ namespace Shared.Enums
 {
     public enum DocumentCategoryEnum
     {
+        /// <summary>
+        /// Водительское удостоверение
+        /// </summary>
         DrivingLicense = 0,
+        /// <summary>
+        /// Паспорт/Идентификационная карточка
+        /// </summary>
         Passport = 1,
-        TravelDocument = 2
+        /// <summary>
+        /// Международный паспорт
+        /// </summary>
+        TravelDocument = 2,
+        /// <summary>
+        /// Неизвестный
+        /// </summary>
+        Unknown = 10
     }
 }
