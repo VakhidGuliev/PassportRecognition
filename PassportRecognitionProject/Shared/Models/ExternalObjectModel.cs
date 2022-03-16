@@ -65,5 +65,10 @@ namespace Shared.Models
         /// Текст с униварсальной MRZ линии
         /// </summary>
         public string MRZLine { get; set; }
+
+        /// <summary>
+        /// Класс документа
+        /// </summary>
+        public string DocumentClassCode { get; set; }
     }
 }
