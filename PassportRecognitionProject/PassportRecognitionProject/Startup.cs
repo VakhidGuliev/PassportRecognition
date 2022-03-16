@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PassportRecognitionProject.src.Services;
+using Shared.Models;
 
 namespace PassportRecognitionProject
 {
@@ -22,7 +23,6 @@ namespace PassportRecognitionProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -32,6 +32,8 @@ namespace PassportRecognitionProject
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IExternalRecognitionService, ExternalRecognitionService>();
             services.AddScoped<IDatabaseService, DatabaseService>();
+
+            services.Configure<ExternalServiceInfo>(Configuration.GetSection("ExternalServiceInfo"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
