@@ -50,17 +50,17 @@ namespace Shared.Models
         /// <summary>
         /// Дата рождения
         /// </summary>
-        public DateTime DateOfBirth { get; set; }
+        public string DateOfBirth { get; set; }
 
         /// <summary>
         /// Дата действия
         /// </summary>
-        public DateTime DateOfExpiration { get; set; }
+        public string DateOfExpiration { get; set; }
 
         /// <summary>
         /// Дата выдачи
         /// </summary>
-        public DateTime DateOfIssue { get; set; }
+        public string DateOfIssue { get; set; }
 
         /// <summary>
         /// Текст с униварсальной MRZ линии

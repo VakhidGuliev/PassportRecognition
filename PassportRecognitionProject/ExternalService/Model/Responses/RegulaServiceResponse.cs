@@ -535,49 +535,42 @@ namespace ExternalService.Model.Responses
 
         private void FillByFirstDocVisualExtendedInfo(List<PArrayField> fields, ref ExternalObjectModel externalObjectModel)
         {
-            string MRZLine = fields.FirstOrDefault(it => it.FieldType == 51 && it.FieldName == "MRZ Strings").GetValue(StrIfNull: CantRecive);
-            string DocumentClassCode = fields.FirstOrDefault(it => it.FieldType == 0 && it.FieldName == "Document Class Code").GetValue(StrIfNull: CantRecive);
-            string IssStateCode = fields.FirstOrDefault(it => it.FieldType == 1 && it.FieldName == "Issuing State Code").GetValue(StrIfNull: CantRecive);
-            string FSName = fields.FirstOrDefault(it => it.FieldType == 25 && it.FieldName == "Surname & Given Names").GetValue(StrIfNull: CantRecive);
-            string NationalCode = fields.FirstOrDefault(it => it.FieldType == 26 && it.FieldName == "Nationality Code").GetValue(StrIfNull: CantRecive);
-            string Sex = fields.FirstOrDefault(it => it.FieldType == 12 && it.FieldName == "Sex").GetValue(StrIfNull: CantRecive);
-            string OptionalData = fields.FirstOrDefault(it => it.FieldType == 36 && it.FieldName == "Optional Data").GetValue(StrIfNull: CantRecive);
-
-
-            externalObjectModel.FirstSecondName = FSName;
-            externalObjectModel.IssuingStateCode = IssStateCode;
-            externalObjectModel.Sex = Sex;
-            externalObjectModel.MRZLine = MRZLine;
-            externalObjectModel.DocumentClassCode = DocumentClassCode;
-            externalObjectModel.NationalityCode = NationalCode;
-            externalObjectModel.OptionalData = OptionalData;
-            
-            /*
-            var birthdayDate = fields.FirstOrDefault(it => it.FieldType == 5 && it.FieldName == "Date of Birth");
-            var expiryDate = fields.FirstOrDefault(it => it.FieldType == 3 && it.FieldName == "Date of Expiry");
-            if (birthdayDate != null)
-            {
-                // Не факт, что работает, маска немного кривая
-                externalObjectModel.DateOfBirth = DateTime.ParseExact(birthdayDate.Buf_Text, birthdayDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
-            }
-
-            if (expiryDate != null)
-            {
-                // Не факт, что работает, маска немного кривая
-                externalObjectModel.DateOfExpiration = DateTime.ParseExact(expiryDate.Buf_Text, expiryDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
-            }
-            */
+            externalObjectModel.FirstSecondName = fields.FirstOrDefault(it => it.FieldType == 25 && it.FieldName == "Surname & Given Names")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.IssuingStateCode = fields.FirstOrDefault(it => it.FieldType == 1 && it.FieldName == "Issuing State Code")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.Sex = fields.FirstOrDefault(it => it.FieldType == 12 && it.FieldName == "Sex")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.MRZLine = fields.FirstOrDefault(it => it.FieldType == 51 && it.FieldName == "MRZ Strings")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.DocumentClassCode = fields.FirstOrDefault(it => it.FieldType == 0 && it.FieldName == "Document Class Code")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.NationalityCode = fields.FirstOrDefault(it => it.FieldType == 26 && it.FieldName == "Nationality Code")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.OptionalData = fields.FirstOrDefault(it => it.FieldType == 36 && it.FieldName == "Optional Data")
+                .GetValue(StrIfNull: CantRecive);
         }
 
         private void FillBySecondDocVisualExtendedInfo(List<PArrayField> fields, ref ExternalObjectModel externalObjectModel)
         {
-            string plaseOfBirth = fields.FirstOrDefault(it => it.FieldType == 6 && it.FieldName == "Place of Birth").GetValue(StrIfNull: CantRecive);
-            string Contry = fields.FirstOrDefault(it => it.FieldType == 24 && it.FieldName == "Authority").GetValue(StrIfNull: CantRecive);
-            string Nationality = fields.FirstOrDefault(it => it.FieldType == 11 && it.FieldName == "Nationality").GetValue(StrIfNull: CantRecive);
+            externalObjectModel.PlaceOfBirth = fields.FirstOrDefault(it => it.FieldType == 6 && it.FieldName == "Place of Birth")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.ContryName = fields.FirstOrDefault(it => it.FieldType == 24 && it.FieldName == "Authority")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.Nationality = fields.FirstOrDefault(it => it.FieldType == 11 && it.FieldName == "Nationality")
+                .GetValue(StrIfNull: CantRecive);
+
+            externalObjectModel.DateOfBirth = fields.FirstOrDefault(it => it.FieldType == 5 && it.FieldName == "Date of Birth")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.DateOfExpiration = fields.FirstOrDefault(it => it.FieldType == 3 && it.FieldName == "Date of Expiry")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.DateOfIssue = fields.FirstOrDefault(it => it.FieldType == 4 && it.FieldName == "Date of Issue")
+                .GetValue(StrIfNull: CantRecive);
 
             if (externalObjectModel.Sex == CantRecive || string.IsNullOrEmpty(externalObjectModel.Sex))
             {
-                externalObjectModel.Sex = fields.FirstOrDefault(it => it.FieldType == 12 && it.FieldName == "Sex").GetValue(StrIfNull: CantRecive);
+                externalObjectModel.Sex = fields.FirstOrDefault(it => it.FieldType == 12 && it.FieldName == "Sex")
+                    .GetValue(StrIfNull: CantRecive);
             }
 
             if (externalObjectModel.IssuingStateCode == CantRecive || string.IsNullOrEmpty(externalObjectModel.IssuingStateCode))
@@ -586,33 +579,6 @@ namespace ExternalService.Model.Responses
                     .GetValue(StrIfNull: CantRecive);
             }
 
-            externalObjectModel.PlaceOfBirth = plaseOfBirth;
-            externalObjectModel.ContryName = Contry;
-            externalObjectModel.Nationality = Nationality;
-            
-            /*
-            var birthdayDate = fields.FirstOrDefault(it => it.FieldType == 5 && it.FieldName == "Date of Birth");
-            var expiryDate = fields.FirstOrDefault(it => it.FieldType == 3 && it.FieldName == "Date of Expiry");
-
-            var issueDate = fields.FirstOrDefault(it => it.FieldType == 4 && it.FieldName == "Date of Issue");
-            if (birthdayDate != null)
-            {
-                // Не факт, что работает, маска немного кривая
-                externalObjectModel.DateOfBirth = DateTime.ParseExact(birthdayDate.Buf_Text, birthdayDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
-            }
-
-            if (expiryDate != null)
-            {
-                // Не факт, что работает, маска немного кривая
-                externalObjectModel.DateOfExpiration = DateTime.ParseExact(expiryDate.Buf_Text, expiryDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
-            }
-
-            if (issueDate != null)
-            {
-                // Не факт, что работает, маска немного кривая
-                externalObjectModel.DateOfExpiration = DateTime.ParseExact(issueDate.Buf_Text, issueDate.FieldMask, CultureInfo.GetCultureInfo("en-US"));
-            }
-            */
         }
 
         private void FillDocumentType(ref ExternalObjectModel externalObjectModel)
