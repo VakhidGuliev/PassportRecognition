@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using ImageObject = System.Object;
 using DocumentInfoModel = System.Object;
 using DocumentShortInfo = System.Object;
 using ExternalService.src;
@@ -22,7 +21,7 @@ namespace PassportRecognitionProject.src.Services
             _databaseService = databaseService;
         }
 
-        public async Task<DocumentInfoModel> RecognitionDocument(ImageObject image)
+        public async Task<DocumentInfoModel> RecognitionDocument(byte[] image)
         {
             var externalInfo = await GetRecognitionDocFromExternalService(image);
             return AddToDataBase(externalInfo);
@@ -43,8 +42,9 @@ namespace PassportRecognitionProject.src.Services
         /// </summary>
         /// <param name="image"> исходное изображение </param>
         /// <returns> Информация пришедшая с внешнего сервиса </returns>
-        private async Task<ExternalObjectModel> GetRecognitionDocFromExternalService(ImageObject image)
+        private async Task<ExternalObjectModel> GetRecognitionDocFromExternalService(byte[] document)
         {
+            string image = Convert.ToBase64String(document);
             return await _externalService.GetRecognition(image);
         }
 

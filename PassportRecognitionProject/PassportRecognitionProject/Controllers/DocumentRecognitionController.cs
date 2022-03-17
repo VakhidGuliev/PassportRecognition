@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PassportRecognitionProject.src.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using ImageObject = System.Object;
 
 namespace PassportRecognitionProject.Controllers
 {
+
     [ApiController]
     [Route("[controller]")]
     public class DocumentRecognitionController : ControllerBase
@@ -22,9 +24,12 @@ namespace PassportRecognitionProject.Controllers
         /// </summary>
         /// <param name="docScan"> Исходное изображение документа </param>
         [HttpPost]
-        public async Task<IActionResult> RecognitionNewDocument([FromBody] ImageObject docScan)
+        public async Task<IActionResult> RecognitionNewDocument([FromForm] IFormFile docScan)
         {
-            return Ok(await _documentService.RecognitionDocument(docScan));
+            using var fileStream = docScan.OpenReadStream();
+            byte[] image = new byte[fileStream.Length];
+            fileStream.Read(image, 0, (int)fileStream.Length);
+            return Ok(await _documentService.RecognitionDocument(image));
         }
 
         /// <summary>

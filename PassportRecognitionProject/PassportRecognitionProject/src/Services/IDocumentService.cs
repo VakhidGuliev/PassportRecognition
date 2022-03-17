@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 // Временное решение
 using DocumentInfoModel = System.Object;
-using ImageObject = System.Object;
 using DocumentShortInfo = System.Object;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace PassportRecognitionProject.src.Services
         /// <param name="image"> Исходное изображение </param>
         /// <returns> Информацию об отправляемом документе </returns>
         // object - DocumentInfoModel
-        public Task<DocumentInfoModel> RecognitionDocument(ImageObject image);
+        public Task<DocumentInfoModel> RecognitionDocument(byte[] image);
 
         /// <summary>
         /// Получение информации об сохранённом документе

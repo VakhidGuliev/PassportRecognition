@@ -34,9 +34,9 @@ namespace ExternalService.src
             _externalServiceInfo = externalServiceURL;
         }
 
-        public async Task<ExternalObjectModel> GetRecognition(ImageObject image)
+        public async Task<ExternalObjectModel> GetRecognition(string image)
         {
-            var response = await RequestSender.Send(_externalServiceInfo.Value.URL, new RegulaServiceRequest(_image));
+            var response = await RequestSender.Send(_externalServiceInfo.Value.URL, new RegulaServiceRequest(image));
 
             return response.ConverToCommonType();
         }
