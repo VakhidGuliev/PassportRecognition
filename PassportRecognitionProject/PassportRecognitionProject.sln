@@ -5,11 +5,13 @@ VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PassportRecognitionProject", "PassportRecognitionProject\PassportRecognitionProject.csproj", "{8F6E34F9-5874-4544-9047-60FE96A7E523}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataService", "DataService\DataService.csproj", "{348961D0-204B-4297-B4E3-8145DCCC1885}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataService", "DataService\DataService.csproj", "{348961D0-204B-4297-B4E3-8145DCCC1885}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{DEAD0551-BFDE-4F7B-AAD4-4F25C6EF90CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{DEAD0551-BFDE-4F7B-AAD4-4F25C6EF90CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExternalService", "ExternalService\ExternalService.csproj", "{F15EBA95-15DC-40B5-B71A-EBB9B473625B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExternalService", "ExternalService\ExternalService.csproj", "{F15EBA95-15DC-40B5-B71A-EBB9B473625B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{DF9B57D1-7660-4367-B82B-A5A19014A04D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{F15EBA95-15DC-40B5-B71A-EBB9B473625B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F15EBA95-15DC-40B5-B71A-EBB9B473625B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F15EBA95-15DC-40B5-B71A-EBB9B473625B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF9B57D1-7660-4367-B82B-A5A19014A04D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF9B57D1-7660-4367-B82B-A5A19014A04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF9B57D1-7660-4367-B82B-A5A19014A04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF9B57D1-7660-4367-B82B-A5A19014A04D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
