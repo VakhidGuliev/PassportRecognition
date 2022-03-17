@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Enums;
+using System;
 
 namespace Shared.Models
 {
@@ -14,7 +15,7 @@ namespace Shared.Models
         /// <summary>
         /// Категория документа (Паспорт, водительское удостоверение)
         /// </summary>
-        public string DocumentCategory { get; set; }
+        public DocumentCategoryEnum DocumentCategory { get; set; }
 
         /// <summary>
         /// Тип документа
@@ -29,12 +30,12 @@ namespace Shared.Models
         /// <summary>
         /// Возраст
         /// </summary>
-        public int Age { get; set; }
+        public string Age { get; set; }
 
         /// <summary>
         /// Пол
         /// </summary>
-        public char Sex { get; set; }
+        public string Sex { get; set; }
 
         /// <summary>
         /// Номер документа
@@ -49,17 +50,17 @@ namespace Shared.Models
         /// <summary>
         /// Дата рождения
         /// </summary>
-        public DateTime DateOfBirth { get; set; }
+        public string DateOfBirth { get; set; }
 
         /// <summary>
         /// Дата действия
         /// </summary>
-        public DateTime DateOfExpiration { get; set; }
+        public string DateOfExpiration { get; set; }
 
         /// <summary>
         /// Дата выдачи
         /// </summary>
-        public DateTime DateOfIssue { get; set; }
+        public string DateOfIssue { get; set; }
 
         /// <summary>
         /// Текст с униварсальной MRZ линии
@@ -70,5 +71,27 @@ namespace Shared.Models
         /// Класс документа
         /// </summary>
         public string DocumentClassCode { get; set; }
+
+        /// <summary>
+        /// Национальный код
+        /// </summary>
+        public string NationalityCode { get; set; }
+
+        /// <summary>
+        /// Название страны
+        /// </summary>
+        public string ContryName { get; set; }
+
+        /// <summary>
+        /// Место рождения
+        /// </summary>
+        public string PlaceOfBirth { get; set; }
+
+        /// <summary>
+        /// Национальность
+        /// </summary>
+        public string Nationality { get; set; }
+
+        public string OptionalData { get; set; }
     }
 }

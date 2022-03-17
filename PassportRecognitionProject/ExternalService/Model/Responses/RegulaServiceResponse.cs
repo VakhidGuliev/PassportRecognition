@@ -1,6 +1,8 @@
-﻿using Shared.Models;
+﻿using Shared.Enums;
+using Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace ExternalService.Model.Responses
@@ -66,6 +68,14 @@ namespace ExternalService.Model.Responses
         public int wFieldType { get; set; }
         public int wLCID { get; set; }
         public Image image { get; set; }
+    }
+
+    public static class PArrayFieldExtention
+    {
+        public static string GetValue(this PArrayField field, string StrIfNull)
+        {
+            return field?.Buf_Text ?? StrIfNull;
+        }
     }
 
     public class DocVisualExtendedInfo
@@ -483,22 +493,114 @@ namespace ExternalService.Model.Responses
 
         public ExternalObjectModel ConverToCommonType()
         {
-            string mRZLine = "", documentClassCode;
+            ExternalObjectModel result;
 
-            var docVisualPart = ContainerList.List.First(it => it.DocVisualExtendedInfo != null);
-            if (docVisualPart != null)
+            var mainDocVisualPart = ContainerList.List.FirstOrDefault(it => it.DocVisualExtendedInfo != null && it.result_type == 3);
+            var secondaryDocVisualPart = ContainerList.List.FirstOrDefault(it => it.DocVisualExtendedInfo != null && it.result_type == 17);
+
+            var DocNumberField = mainDocVisualPart?.DocVisualExtendedInfo.pArrayFields.FirstOrDefault(it => it.FieldType == 2 && it.FieldName == "Document Number");
+            if (DocNumberField == null)
             {
-                var fields = docVisualPart.DocVisualExtendedInfo.pArrayFields;
-                mRZLine = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                    .First(it => it.FieldType == 51 && it.FieldName == "MRZ Strings").Buf_Text;
-                documentClassCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                    .FirstOrDefault(it => it.FieldType == 51 && it.FieldName == "Document Class Code").Buf_Text;
+                DocNumberField = secondaryDocVisualPart?.DocVisualExtendedInfo.pArrayFields
+                    .FirstOrDefault(it => it.FieldType == 2 && it.FieldName == "Document Number");
             }
 
-            return new ExternalObjectModel("testNumber")
+            if (DocNumberField != null)
             {
-                MRZLine = mRZLine
-            };
+                string DocumentNumber = DocNumberField.Buf_Text;
+                result = new ExternalObjectModel(DocumentNumber);
+
+                if (mainDocVisualPart != null)
+                {
+                    var fields = mainDocVisualPart.DocVisualExtendedInfo.pArrayFields;
+                    FillByFirstDocVisualExtendedInfo(fields, ref result);
+                }
+
+                if (secondaryDocVisualPart != null)
+                {
+                    var fields = secondaryDocVisualPart.DocVisualExtendedInfo.pArrayFields;
+                    FillBySecondDocVisualExtendedInfo(fields, ref result);
+                }
+
+                FillDocumentType(ref result);
+                FillAge(ref result);
+            }
+            else
+            {
+                throw new ArgumentNullException("Не удалось распознать номер документа");
+            }
+
+            return result;           
+        }
+
+        private void FillByFirstDocVisualExtendedInfo(List<PArrayField> fields, ref ExternalObjectModel externalObjectModel)
+        {
+            externalObjectModel.FirstSecondName = fields.FirstOrDefault(it => it.FieldType == 25 && it.FieldName == "Surname & Given Names")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.IssuingStateCode = fields.FirstOrDefault(it => it.FieldType == 1 && it.FieldName == "Issuing State Code")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.Sex = fields.FirstOrDefault(it => it.FieldType == 12 && it.FieldName == "Sex")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.MRZLine = fields.FirstOrDefault(it => it.FieldType == 51 && it.FieldName == "MRZ Strings")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.DocumentClassCode = fields.FirstOrDefault(it => it.FieldType == 0 && it.FieldName == "Document Class Code")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.NationalityCode = fields.FirstOrDefault(it => it.FieldType == 26 && it.FieldName == "Nationality Code")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.OptionalData = fields.FirstOrDefault(it => it.FieldType == 36 && it.FieldName == "Optional Data")
+                .GetValue(StrIfNull: CantRecive);
+        }
+
+        private void FillBySecondDocVisualExtendedInfo(List<PArrayField> fields, ref ExternalObjectModel externalObjectModel)
+        {
+            externalObjectModel.PlaceOfBirth = fields.FirstOrDefault(it => it.FieldType == 6 && it.FieldName == "Place of Birth")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.ContryName = fields.FirstOrDefault(it => it.FieldType == 24 && it.FieldName == "Authority")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.Nationality = fields.FirstOrDefault(it => it.FieldType == 11 && it.FieldName == "Nationality")
+                .GetValue(StrIfNull: CantRecive);
+
+            externalObjectModel.DateOfBirth = fields.FirstOrDefault(it => it.FieldType == 5 && it.FieldName == "Date of Birth")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.DateOfExpiration = fields.FirstOrDefault(it => it.FieldType == 3 && it.FieldName == "Date of Expiry")
+                .GetValue(StrIfNull: CantRecive);
+            externalObjectModel.DateOfIssue = fields.FirstOrDefault(it => it.FieldType == 4 && it.FieldName == "Date of Issue")
+                .GetValue(StrIfNull: CantRecive);
+
+            if (externalObjectModel.Sex == CantRecive || string.IsNullOrEmpty(externalObjectModel.Sex))
+            {
+                externalObjectModel.Sex = fields.FirstOrDefault(it => it.FieldType == 12 && it.FieldName == "Sex")
+                    .GetValue(StrIfNull: CantRecive);
+            }
+
+            if (externalObjectModel.IssuingStateCode == CantRecive || string.IsNullOrEmpty(externalObjectModel.IssuingStateCode))
+            {
+                externalObjectModel.IssuingStateCode = fields.FirstOrDefault(it => it.FieldType == 1 && it.FieldName == "Issuing State Code")
+                    .GetValue(StrIfNull: CantRecive);
+            }
+
+        }
+
+        private void FillDocumentType(ref ExternalObjectModel externalObjectModel)
+        {
+            var onCandidateInfo = ContainerList.List.FirstOrDefault(it => it.OneCandidate != null)?.OneCandidate;
+            if (onCandidateInfo != null)
+            {
+                externalObjectModel.DocumentType = onCandidateInfo.DocumentName;
+                externalObjectModel.DocumentCategory = (onCandidateInfo.RFID_Presence < 3)
+                    ? (DocumentCategoryEnum)onCandidateInfo.RFID_Presence
+                    : DocumentCategoryEnum.Unknown;
+            }
+            else
+            {
+                externalObjectModel.DocumentType = CantRecive;
+            }
+        }
+
+        private void FillAge(ref ExternalObjectModel externalObjectModel)
+        {
+            var textfields = ContainerList.List.FirstOrDefault(it => it.Text != null)?.Text;
+            externalObjectModel.Age = textfields?.fieldList.FirstOrDefault(it => it.fieldType == 185 && it.fieldName == "Age")?.value ?? CantRecive;
         }
     }
 
