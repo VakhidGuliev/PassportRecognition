@@ -70,6 +70,14 @@ namespace ExternalService.Model.Responses
         public Image image { get; set; }
     }
 
+    public static class PArrayFieldExtention
+    {
+        public static string GetValue(this PArrayField field, string StrIfNull)
+        {
+            return field?.Buf_Text ?? StrIfNull;
+        }
+    }
+
     public class DocVisualExtendedInfo
     {
         public int nFields { get; set; }
@@ -487,15 +495,14 @@ namespace ExternalService.Model.Responses
         {
             ExternalObjectModel result;
 
-            var mainDocVisualPart = ContainerList.List.First(it => it.DocVisualExtendedInfo != null && it.result_type == 3);
-            var secondaryDocVisualPart = ContainerList.List.First(it => it.DocVisualExtendedInfo != null && it.result_type == 17);
+            var mainDocVisualPart = ContainerList.List.FirstOrDefault(it => it.DocVisualExtendedInfo != null && it.result_type == 3);
+            var secondaryDocVisualPart = ContainerList.List.FirstOrDefault(it => it.DocVisualExtendedInfo != null && it.result_type == 17);
 
-            var DocNumberField = mainDocVisualPart.DocVisualExtendedInfo.pArrayFields
-                .First(it => it.FieldType == 2 && it.FieldName == "Document Number");
+            var DocNumberField = mainDocVisualPart?.DocVisualExtendedInfo.pArrayFields.FirstOrDefault(it => it.FieldType == 2 && it.FieldName == "Document Number");
             if (DocNumberField == null)
             {
-                DocNumberField = secondaryDocVisualPart.DocVisualExtendedInfo.pArrayFields
-                    .First(it => it.FieldType == 2 && it.FieldName == "Document Number");
+                DocNumberField = secondaryDocVisualPart?.DocVisualExtendedInfo.pArrayFields
+                    .FirstOrDefault(it => it.FieldType == 2 && it.FieldName == "Document Number");
             }
 
             if (DocNumberField != null)
@@ -528,41 +535,26 @@ namespace ExternalService.Model.Responses
 
         private void FillByFirstDocVisualExtendedInfo(List<PArrayField> fields, ref ExternalObjectModel externalObjectModel)
         {
-            string MRZLine = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 51 && it.FieldName == "MRZ Strings").Buf_Text;
+            string MRZLine = fields.FirstOrDefault(it => it.FieldType == 51 && it.FieldName == "MRZ Strings").GetValue(StrIfNull: CantRecive);
+            string DocumentClassCode = fields.FirstOrDefault(it => it.FieldType == 0 && it.FieldName == "Document Class Code").GetValue(StrIfNull: CantRecive);
+            string IssStateCode = fields.FirstOrDefault(it => it.FieldType == 1 && it.FieldName == "Issuing State Code").GetValue(StrIfNull: CantRecive);
+            string FSName = fields.FirstOrDefault(it => it.FieldType == 25 && it.FieldName == "Surname & Given Names").GetValue(StrIfNull: CantRecive);
+            string NationalCode = fields.FirstOrDefault(it => it.FieldType == 26 && it.FieldName == "Nationality Code").GetValue(StrIfNull: CantRecive);
+            string Sex = fields.FirstOrDefault(it => it.FieldType == 12 && it.FieldName == "Sex").GetValue(StrIfNull: CantRecive);
+            string OptionalData = fields.FirstOrDefault(it => it.FieldType == 36 && it.FieldName == "Optional Data").GetValue(StrIfNull: CantRecive);
 
-            string DocumentClassCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 0 && it.FieldName == "Document Class Code").Buf_Text;
-
-            string IssStateCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 1 && it.FieldName == "Issuing State Code").Buf_Text;
-
-            string FSName = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 25 && it.FieldName == "Surname & Given Names").Buf_Text;
-
-            // todo I have trouble
-            //var NationalCode = fields.First(it => it.FieldType == 26 && it.FieldName == "Nationality Codes").Buf_Text;
-
-            string Sex = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 12 && it.FieldName == "Sex").Buf_Text;
-
-            string OptionalData = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 36 && it.FieldName == "Optional Data").Buf_Text;
-
-            // todo Проверить как это работает
-            /*
-            var birthdayDate = fields.First(it => it.FieldType == 5 && it.FieldName == "Date of Birth");
-            var expiryDate = fields.First(it => it.FieldType == 3 && it.FieldName == "Date of Expiry");
-            */
 
             externalObjectModel.FirstSecondName = FSName;
             externalObjectModel.IssuingStateCode = IssStateCode;
             externalObjectModel.Sex = Sex;
             externalObjectModel.MRZLine = MRZLine;
             externalObjectModel.DocumentClassCode = DocumentClassCode;
-            // externalObjectModel.NationalityCode = NationalCode;
+            externalObjectModel.NationalityCode = NationalCode;
             externalObjectModel.OptionalData = OptionalData;
+            
             /*
+            var birthdayDate = fields.FirstOrDefault(it => it.FieldType == 5 && it.FieldName == "Date of Birth");
+            var expiryDate = fields.FirstOrDefault(it => it.FieldType == 3 && it.FieldName == "Date of Expiry");
             if (birthdayDate != null)
             {
                 // Не факт, что работает, маска немного кривая
@@ -579,39 +571,30 @@ namespace ExternalService.Model.Responses
 
         private void FillBySecondDocVisualExtendedInfo(List<PArrayField> fields, ref ExternalObjectModel externalObjectModel)
         {
-            string plaseOfBirth = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 6 && it.FieldName == "Place of Birth").Buf_Text;
-
-            string Contry = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 24 && it.FieldName == "Authority").Buf_Text;
-
-            string Nationality = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                .First(it => it.FieldType == 11 && it.FieldName == "Nationality").Buf_Text;
+            string plaseOfBirth = fields.FirstOrDefault(it => it.FieldType == 6 && it.FieldName == "Place of Birth").GetValue(StrIfNull: CantRecive);
+            string Contry = fields.FirstOrDefault(it => it.FieldType == 24 && it.FieldName == "Authority").GetValue(StrIfNull: CantRecive);
+            string Nationality = fields.FirstOrDefault(it => it.FieldType == 11 && it.FieldName == "Nationality").GetValue(StrIfNull: CantRecive);
 
             if (externalObjectModel.Sex == CantRecive || string.IsNullOrEmpty(externalObjectModel.Sex))
             {
-                externalObjectModel.Sex = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                    .First(it => it.FieldType == 12 && it.FieldName == "Sex").Buf_Text;
+                externalObjectModel.Sex = fields.FirstOrDefault(it => it.FieldType == 12 && it.FieldName == "Sex").GetValue(StrIfNull: CantRecive);
             }
 
             if (externalObjectModel.IssuingStateCode == CantRecive || string.IsNullOrEmpty(externalObjectModel.IssuingStateCode))
             {
-                externalObjectModel.IssuingStateCode = fields.DefaultIfEmpty(new PArrayField() { Buf_Text = CantRecive })
-                    .First(it => it.FieldType == 1 && it.FieldName == "Issuing State Code").Buf_Text;
+                externalObjectModel.IssuingStateCode = fields.FirstOrDefault(it => it.FieldType == 1 && it.FieldName == "Issuing State Code")
+                    .GetValue(StrIfNull: CantRecive);
             }
-
-            // todo Проверить как это работает
-            /*
-            var birthdayDate = fields.First(it => it.FieldType == 5 && it.FieldName == "Date of Birth");
-            var expiryDate = fields.First(it => it.FieldType == 3 && it.FieldName == "Date of Expiry");
-
-            var issueDate = fields.First(it => it.FieldType == 4 && it.FieldName == "Date of Issue");
-            */
 
             externalObjectModel.PlaceOfBirth = plaseOfBirth;
             externalObjectModel.ContryName = Contry;
             externalObjectModel.Nationality = Nationality;
+            
             /*
+            var birthdayDate = fields.FirstOrDefault(it => it.FieldType == 5 && it.FieldName == "Date of Birth");
+            var expiryDate = fields.FirstOrDefault(it => it.FieldType == 3 && it.FieldName == "Date of Expiry");
+
+            var issueDate = fields.FirstOrDefault(it => it.FieldType == 4 && it.FieldName == "Date of Issue");
             if (birthdayDate != null)
             {
                 // Не факт, что работает, маска немного кривая
@@ -634,7 +617,7 @@ namespace ExternalService.Model.Responses
 
         private void FillDocumentType(ref ExternalObjectModel externalObjectModel)
         {
-            var onCandidateInfo = ContainerList.List.DefaultIfEmpty(new ListMain() { OneCandidate = null }).First(it => it.OneCandidate != null).OneCandidate;
+            var onCandidateInfo = ContainerList.List.FirstOrDefault(it => it.OneCandidate != null)?.OneCandidate;
             if (onCandidateInfo != null)
             {
                 externalObjectModel.DocumentType = onCandidateInfo.DocumentName;
@@ -650,15 +633,8 @@ namespace ExternalService.Model.Responses
 
         private void FillAge(ref ExternalObjectModel externalObjectModel)
         {
-            var textfields = ContainerList.List.DefaultIfEmpty(new ListMain() { Text = null }).First(it => it.Text != null).Text;
-            if (textfields != null)
-            {
-                externalObjectModel.Age = textfields.fieldList.DefaultIfEmpty(new FieldList() { value = CantRecive }).First(it => it.fieldType == 185 && it.fieldName == "Age").value;                
-            }
-            else
-            {
-                externalObjectModel.DocumentType = CantRecive;
-            }
+            var textfields = ContainerList.List.FirstOrDefault(it => it.Text != null)?.Text;
+            externalObjectModel.Age = textfields?.fieldList.FirstOrDefault(it => it.fieldType == 185 && it.fieldName == "Age")?.value ?? CantRecive;
         }
     }
 
