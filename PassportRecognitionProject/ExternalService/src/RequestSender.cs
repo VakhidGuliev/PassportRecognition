@@ -13,7 +13,6 @@ namespace ExternalService.src
     {
         public static async Task<IExternalServiceResponse> Send(string URL, IExternalServiceRequest externalServiceRequest)
         {
-
             string responseRes;
 
             var json = JsonConvert.SerializeObject(externalServiceRequest);
@@ -26,7 +25,6 @@ namespace ExternalService.src
                 responseRes = response.Content.ReadAsStringAsync().Result;                
             };
 
-            // Не уверен, что это сработает
             switch (externalServiceRequest.GetType())
             {
                 case ExternalTypeEnum.Regula: return JsonConvert.DeserializeObject<RegulaResponse>(responseRes);
