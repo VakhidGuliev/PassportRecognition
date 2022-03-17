@@ -2,6 +2,8 @@ using ExternalService.Model.Requests;
 using ExternalService.Model.Responses;
 using ExternalService.src;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,6 +32,73 @@ namespace Tests.ExternalServiceTests
             var response = await RequestSender.Send(URL, new RegulaServiceRequest(firstImage));
 
             Assert.AreEqual(firstImageExpectDocNumber, GetDocNumber((RegulaResponse)response));
+        }
+
+        [Test]
+        public async Task SendThreeDifferentRequest()
+        {
+            var firstRequest = new RegulaServiceRequest(firstImage);
+            var secondRequest = new RegulaServiceRequest(secondImage);
+            var thirdRequest = new RegulaServiceRequest(thirdImage);
+
+            var firstResponseTask = RequestSender.Send(URL, firstRequest);
+            var secondResponseTask = RequestSender.Send(URL, secondRequest);
+            var thirdResponseTask = RequestSender.Send(URL, thirdRequest);
+
+            var fResponse = await firstResponseTask;
+            var sResponse = await secondResponseTask;
+            var tResponse = await thirdResponseTask;
+
+
+            Assert.AreEqual(firstImageExpectDocNumber, GetDocNumber((RegulaResponse)fResponse));
+            Assert.AreEqual(secondImageExpectDocNumber, GetDocNumber((RegulaResponse)sResponse));
+            Assert.AreEqual(thirdImageExpectDocNumber, GetDocNumber((RegulaResponse)tResponse));
+        }
+
+        [Test]
+        public async Task SendManyDifferentRequest()
+        {
+            var rand = new Random();
+            var Requests = new List<RequestInfo>();
+            int requestCount = rand.Next(10, 20);
+
+            for (int i = 0; i < requestCount; i++)
+            {
+                var requestNumber = rand.Next(1, 3);
+                switch (requestNumber)
+                {
+                    case 1:
+                        Requests.Add(new RequestInfo(RequestSender.Send(URL, new RegulaServiceRequest(firstImage)), firstImageExpectDocNumber));
+                        break;
+                    case 2:
+                        Requests.Add(new RequestInfo(RequestSender.Send(URL, new RegulaServiceRequest(secondImage)), secondImageExpectDocNumber));
+                        break;
+                    case 3:
+                        Requests.Add(new RequestInfo(RequestSender.Send(URL, new RegulaServiceRequest(thirdImage)), thirdImageExpectDocNumber));
+                        break;
+                    default: break;
+                }
+            }
+
+            foreach(var request in Requests)
+            {
+                var response = await request.requestResTask;
+                Assert.AreEqual(request.ExpectedDocumentNumber, GetDocNumber((RegulaResponse)response));
+            }
+
+        }
+
+        public class RequestInfo
+        {
+            public RequestInfo(Task<IExternalServiceResponse> requestRes, string ExpectedValue)
+            {
+                requestResTask = requestRes;
+                ExpectedDocumentNumber = ExpectedValue;
+            }
+
+            public string ExpectedDocumentNumber { get; private set; }
+
+            public Task<IExternalServiceResponse> requestResTask { get; private set; }
         }
 
         private string GetDocNumber(RegulaResponse regulaResponse)
