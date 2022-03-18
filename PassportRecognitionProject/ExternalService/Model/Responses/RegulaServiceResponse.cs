@@ -529,7 +529,7 @@ namespace ExternalService.Model.Responses
             {
                 throw new ArgumentNullException("Не удалось распознать номер документа");
             }
-
+          
             return result;           
         }
 
@@ -602,6 +602,7 @@ namespace ExternalService.Model.Responses
             var textfields = ContainerList.List.FirstOrDefault(it => it.Text != null)?.Text;
             externalObjectModel.Age = textfields?.fieldList.FirstOrDefault(it => it.fieldType == 185 && it.fieldName == "Age")?.value ?? CantRecive;
         }
+       
     }
 
 

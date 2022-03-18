@@ -93,5 +93,9 @@ namespace Shared.Models
         public string Nationality { get; set; }
 
         public string OptionalData { get; set; }
+        /// <summary>
+        /// Картинка
+        /// </summary>
+        public byte[] Image { get; set; }
     }
 }

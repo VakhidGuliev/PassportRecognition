@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System;
+using MongoDB.Driver.GridFS;
 
 namespace DataService.src.Repository
 {
@@ -29,7 +30,8 @@ namespace DataService.src.Repository
             if (await GetDocumentInfo(model.DocNumber) == null)
             {
                 await Documents.InsertOneAsync(model);
-
+                IGridFSBucket gridFS = new GridFSBucket(db);
+                await gridFS.UploadFromBytesAsync("documentScan",model.Image);
                 return model;
             }
 
